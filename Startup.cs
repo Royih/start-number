@@ -9,9 +9,6 @@ namespace start_number
 {
     public class Startup
     {
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,7 +27,7 @@ namespace start_number
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:3000");
+                        builder.WithOrigins("http://localhost:3000", "https://start-number.azurewebsites.net");
                     });
             });
 
