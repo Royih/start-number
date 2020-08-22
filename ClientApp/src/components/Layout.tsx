@@ -1,15 +1,11 @@
-import React, { Component } from "react";
+import React from "react";
 import { Container } from "reactstrap";
 import NavBar from "./NavBar";
 
-export class Layout extends Component {
-  static displayName = Layout.name;
-
-  render() {
-    return (
-      <div>
-        <NavBar></NavBar> <Container> {this.props.children} </Container>{" "}
-      </div>
-    );
-  }
-}
+export const Layout = (props: any) => {
+  return (
+    <div>
+      <NavBar></NavBar> <Container> {props.children} </Container>{" "}
+    </div>
+  );
+};

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace start_number.Controllers
+namespace Signup.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]

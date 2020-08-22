@@ -1,11 +1,21 @@
+using System;
+using System.Reflection;
+using AutoMapper;
+using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using Signup.API.Common;
+using Signup.API.Infrastructure.CustomIdentity;
+using Signup.API.Models;
+using Signup.API.Users.Repos;
+using Signup.Infrastructure;
 
-namespace start_number
+namespace Signup
 {
     public class Startup
     {
@@ -22,26 +32,45 @@ namespace start_number
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddControllersWithViews().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
+
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/build";
+            });
+
+
+            services.AddScoped<IDb, Db>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAnonymousRepository, AnonymousRepository>();
+            services.AddScoped<ICurrentUser, CurrentUser>();
+
+            services.AddCustomIdentity(Configuration);
+
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:3000", "https://start-number.azurewebsites.net");
+                        builder.AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials()
+                        .WithOrigins("http://localhost:3000", "https://start-number.azurewebsites.net");
                     });
             });
 
-            services.AddControllersWithViews();
+            //https://github.com/jbogard/MediatR/wiki
+            services.AddMediatR(Assembly.GetEntryAssembly());
+            services.AddAutoMapper(typeof(Startup));
+
+
 
             // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/build";
-            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -54,14 +83,16 @@ namespace start_number
                 app.UseHsts();
             }
 
+            app.UseSerilogRequestLogging();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseCors();
-
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -79,6 +110,11 @@ namespace start_number
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
                 }
             });
+
+
+            serviceProvider.SeedDb(Configuration);
+
+            Log.Information("Ready!");
         }
     }
 }

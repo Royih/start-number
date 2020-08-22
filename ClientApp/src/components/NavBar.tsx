@@ -9,6 +9,7 @@ import LoyaltyIcon from "@material-ui/icons/Loyalty";
 import { ThemeContext } from "src/infrastructure/ThemeContextProvider";
 import DarkModeIcon from "@material-ui/icons/Brightness4";
 import LightModeIcon from "@material-ui/icons/Brightness5";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,15 +29,25 @@ export default function NavBar() {
   const theme = useTheme();
   const themeContext = useContext(ThemeContext);
 
+  const history = useHistory();
+
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+          <IconButton
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="menu"
+            onClick={() => {
+              history.push("/");
+            }}
+          >
             <LoyaltyIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Start number generator #
+            Signup!
           </Typography>
           <IconButton onClick={themeContext.toggleMode}>
             {theme.palette.type === "light" && <LightModeIcon />}

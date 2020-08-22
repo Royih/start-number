@@ -1,6 +1,6 @@
 using System;
 
-namespace start_number
+namespace Signup
 {
     public class WeatherForecast
     {
