@@ -55,7 +55,7 @@ namespace Signup
                         builder.AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials()
-                        .WithOrigins("http://localhost:3000", "https://start-number.azurewebsites.net");
+                        .WithOrigins("http://localhost:3000", "https://signupnow.azurewebsites.net");
                     });
             });
 

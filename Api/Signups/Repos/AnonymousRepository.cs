@@ -70,7 +70,7 @@ namespace Signup.API.Users.Repos
                     var listOfUpdates = new List<UpdateDefinition<Event>>();
                     listOfUpdates.Add(Builders<Event>.Update.Set(x => x.Signups, newSignupsArray));
                     var finalUpd = Builders<Event>.Update.Combine(listOfUpdates);
-                    await _db.Events.UpdateOneAsync(x => x.Id == currentEvent.Id, finalUpd, new UpdateOptions { IsUpsert = true });
+                    await _db.Events.FindOneAndUpdateAsync(x => x.Id == currentEvent.Id && x.Signups.Length == currentEvent.Signups.Length, finalUpd);
                 }
 
                 await _db.SignupRecords.InsertOneAsync(new SignupRecord
