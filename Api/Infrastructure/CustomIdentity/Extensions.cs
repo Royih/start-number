@@ -87,7 +87,7 @@ namespace Signup.API.Infrastructure.CustomIdentity
 
                         ValidateLifetime = true,
 
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Constants.AppSettingSecretKey)),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration[Constants.AppSettingSecretKey])),
                         ClockSkew = TimeSpan.Zero
                     };
 
