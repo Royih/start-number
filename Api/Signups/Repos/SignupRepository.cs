@@ -53,7 +53,7 @@ namespace Signup.API.Users.Repos
                                                 <td style='font-size: 450px; font-weight: bolder; text-align:center; font-family: Arial, Helvetica, sans-serif'>
                                                     {("00"+startNumber).PadRight(3)}
                                                 </td>
-                                                <td style='width:20%; font-size: 150px; line-height: 90%; text-align: center; font-weight: bold; border: 10px solid #000; padding: 15px'>{string.Join("<BR />",year.ToString().ToCharArray())}</td>
+                                                <td style='width:20%; font-size: 90px; line-height: 90%; text-align: center; font-weight: bold; border: 2px solid #bbb; background-color: #eee; padding: 8px'>{string.Join("<BR />",year.ToString().ToCharArray())}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan='3'>
