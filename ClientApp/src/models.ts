@@ -21,6 +21,7 @@ export interface CommandResultDto<T> {
 }
 export interface SignUpsForEventDto {
   startNumber: number;
+  personId: string;
   firstName: string;
   surName: string;
   email: string;

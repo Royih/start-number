@@ -5,7 +5,7 @@ import Alert from "@material-ui/lab/Alert";
 import { UserDto } from "./UserContextProvider";
 
 export type ApiContextState = {
-  get<T>(url: string): Promise<T>;
+  get<T>(url: string, resultIsBlob?: boolean): Promise<T>;
   post<T>(url: string, payload?: any): Promise<T>;
   getUserFromExistingToken(): UserDto | null;
   login(loginResult: ILoginResult): UserDto;
@@ -27,7 +27,7 @@ export const ApiContextProvider = (props: any) => {
   const [exception, setException] = useState("");
   const [exceptionDetails, setExceptionDetails] = useState("");
 
-  const request = async <T extends unknown>(url: string, method: string, payload?: any, noRetries?: boolean): Promise<T | undefined> => {
+  const request = async (url: string, method: string, payload?: any, noRetries?: boolean): Promise<Response | undefined> => {
     let accessToken = localStorage.getItem(AccessTokenLocalStorageKey);
 
     let headers = new Headers();
@@ -46,7 +46,7 @@ export const ApiContextProvider = (props: any) => {
       throw error;
     });
     if (response.ok) {
-      return response.json();
+      return response;
     } else if (response.status === 401 && url !== RefreshAccessTokenUrl) {
       if (!noRetries) {
         let refreshAccessTokenOk = await refreshAccessToken();
@@ -54,7 +54,7 @@ export const ApiContextProvider = (props: any) => {
           return await request(url, method, payload, true);
         }
       }
-      console.error("Tried once after refreshing the access token. Still no luck. So logging out.")
+      console.error("Tried once after refreshing the access token. Still no luck. So logging out.");
       logout();
       return;
     } else {
@@ -68,13 +68,18 @@ export const ApiContextProvider = (props: any) => {
     //throw new Error(response.statusText);
   };
 
-  const get = async <T extends unknown>(url: string): Promise<T | undefined> => {
+  const get = async <T extends unknown>(url: string, isBlob?: boolean): Promise<T | Blob | undefined> => {
     //setLastCall(url);
-    return await request<T>(url, "GET");
+    var result = await request(url, "GET");
+    if (!isBlob) {
+      return result?.json();
+    }
+    return result?.blob();
   };
 
   const post = async <T extends unknown>(url: string, payload?: any): Promise<T | undefined> => {
-    return await request(url, "POST", payload);
+    var result = await request(url, "POST", payload);
+    return result?.json();
   };
 
   const refreshAccessToken = async (): Promise<boolean> => {

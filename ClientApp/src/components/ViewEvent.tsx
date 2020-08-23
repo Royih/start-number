@@ -2,7 +2,9 @@ import React, { useEffect, useState, useContext } from "react";
 import { SignUpsForEventDto } from "src/models";
 import { ApiContext } from "src/infrastructure/ApiContextProvider";
 import { useParams } from "react-router-dom";
-import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody } from "@material-ui/core";
+import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, IconButton } from "@material-ui/core";
+import StartNumberIcon from "@material-ui/icons/Label";
+import { saveAs } from "file-saver";
 
 export const ViewEvent = () => {
   const api = useContext(ApiContext);
@@ -16,6 +18,11 @@ export const ViewEvent = () => {
     loadData();
   }, [api, eventId]);
 
+  const downloadStartNumber = async (personId: string, firstName: string) => {
+    const data = await api.get<Blob>("signup/downloadStartNumber/" + eventId + "/" + personId, true);
+    saveAs(data, `Start_Number_${firstName}.pdf`);
+  };
+
   return (
     <div>
       <TableContainer>
@@ -27,6 +34,7 @@ export const ViewEvent = () => {
               <TableCell>Surname</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Allow contact</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -38,6 +46,15 @@ export const ViewEvent = () => {
                   <TableCell>{signup.surName}</TableCell>
                   <TableCell>{signup.email}</TableCell>
                   <TableCell>{signup.allowUsToContactPersonByEmail ? "Yes" : "No"}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      onClick={() => {
+                        downloadStartNumber(signup.personId, signup.firstName);
+                      }}
+                    >
+                      <StartNumberIcon />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>

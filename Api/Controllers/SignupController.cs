@@ -1,4 +1,5 @@
 ﻿
+using System.IO;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +20,20 @@ namespace Signup.API.Controllers
         public async Task<IActionResult> ListSignups(string eventId)
         {
             return Ok(await Mediator.Send(new ListSignupsQuery { EventId = eventId }));
+        }
+
+        [HttpGet("downloadStartNumber/{eventId}/{personId}")]
+        public async Task<IActionResult> ListSignups(string eventId, string personId)
+        {
+            var data = await Mediator.Send(new GetStartNumberPdfQuery
+            {
+                EventId = eventId,
+                PersonId = personId
+            });
+            return new FileContentResult(data, "application/pdf")
+            {
+                FileDownloadName = "file_name_here.pdf"
+            };
         }
 
     }

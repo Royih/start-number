@@ -1,6 +1,8 @@
 using System;
 using System.Reflection;
 using AutoMapper;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -45,6 +47,8 @@ namespace Signup
             services.AddScoped<IAnonymousRepository, AnonymousRepository>();
             services.AddScoped<ISignupRepository, SignupRepository>();
             services.AddScoped<ICurrentUser, CurrentUser>();
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+
 
             services.AddCustomIdentity(Configuration);
 

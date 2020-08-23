@@ -9,5 +9,6 @@ namespace Signup.API.Users.Repos
     public interface ISignupRepository
     {
         Task<IEnumerable<SignUpsForEventDto>> ListSignups(string eventId);
+        Task<byte[]> GetStartNumberPdf(string eventId, string personId);
     }
 }
