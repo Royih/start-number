@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
+using Serilog.Formatting.Compact;
 
 namespace Signup
 {
@@ -16,6 +17,7 @@ namespace Signup
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
+                .WriteTo.File(new CompactJsonFormatter(), path: "logs/signup.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7, buffered: true)
                 .CreateLogger();
 
             try
