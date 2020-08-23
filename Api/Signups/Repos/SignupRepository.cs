@@ -42,7 +42,7 @@ namespace Signup.API.Users.Repos
                 },
                 Objects = {
                     new ObjectSettings() {
-                        HtmlContent = $@"<table border=0 style='width: 100%; font-family: Helvetica'>
+                        HtmlContent = $@"<table border=0 style='width: 100%; font-family: Arial, Helvetica, sans-serif'>
                                             <tr>
                                                 <td colspan='3' style='text-align:center;'>
                                                     <img alt='Embedded Image' style='height: 300px' src='{Constants.DefaultBase64EncodedLogo}'>
@@ -50,7 +50,7 @@ namespace Signup.API.Users.Repos
                                             </tr>
                                             <tr>
                                                 <td style='width:10%'>&nbsp;</td>
-                                                <td style='font-size: 450px; font-weight: bolder; text-align:center; font-family: Arial, Helvetica, sans-serif'>
+                                                <td style='font-size: 420px; font-weight: bolder; text-align:center; font-family: Arial, Helvetica, sans-serif; padding: 0;'>
                                                     {("00"+startNumber).PadRight(3)}
                                                 </td>
                                                 <td style='width:20%; font-size: 90px; line-height: 90%; text-align: center; font-weight: bold; border: 2px solid #bbb; background-color: #eee; padding: 8px'>{string.Join("<BR />",year.ToString().ToCharArray())}</td>
