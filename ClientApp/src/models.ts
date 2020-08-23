@@ -1,6 +1,7 @@
 export interface ActiveEventDto {
   tenantKey: string;
   name: string;
+  logo: string;
   eventId: string;
 }
 

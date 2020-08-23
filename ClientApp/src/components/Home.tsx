@@ -30,11 +30,8 @@ export const Home = () => {
 
   return (
     <div>
-      <h1>Welcome to Signup!</h1>
-      <p>Solving your need for sign-up and generating start-numbers for sport-events or similar.</p>
-
       <h4>
-        <code>Click your event below</code>
+        <code>Select your event below</code>
       </h4>
       <TableContainer>
         <Table>
@@ -47,7 +44,10 @@ export const Home = () => {
           <TableBody>
             {events.map((ev: ActiveEventDto) => (
               <TableRow key={ev.tenantKey} hover className={classes.defaultCursor}>
-                <TableCell onClick={() => history.push("/signup/" + ev.tenantKey)}>{ev.name}</TableCell>
+                <TableCell onClick={() => history.push("/signup/" + ev.tenantKey)}>
+                  {ev.logo && <img alt="Logo" height="100px" src={ev.logo} color="secondary" />}
+                  {ev.name}
+                </TableCell>
                 {currentUser && (
                   <TableCell>
                     {currentUser.hasRole(RoleTypes.User) && (

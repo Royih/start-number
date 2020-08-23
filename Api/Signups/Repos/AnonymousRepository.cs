@@ -36,7 +36,8 @@ namespace Signup.API.Users.Repos
         {
             var activeTenants = (await _db.Tenants.FindAsync(x => !string.IsNullOrEmpty(x.CurrentlyActiveEventId))).ToEnumerable().ToList();
             var ids = activeTenants.Select(x => x.CurrentlyActiveEventId);
-            return (await _db.Events.FindAsync(x => ids.Contains(x.Id))).ToEnumerable().Select(x => new ActiveEventDto { TenantKey = activeTenants.Single(y => y.Id == x.TenantId).Key, Name = x.Name, EventId = x.Id });
+            var currentEvents = (await _db.Events.FindAsync(x => ids.Contains(x.Id))).ToEnumerable();
+            return activeTenants.Select(x => new ActiveEventDto { TenantKey = x.Key, Name = currentEvents.Single(y => y.Id == x.CurrentlyActiveEventId).Name, EventId = x.CurrentlyActiveEventId, Logo = x.Base64EncodedLogo });
         }
 
         public async Task<CommandResultDto> SignUp(SignUpDto signUpData)

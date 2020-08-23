@@ -113,7 +113,7 @@ export const SignUp = () => {
             <LockOutlinedIcon />
           </Avatar>
         )}
-        {eventData && eventData.tenantLogo && (<img alt="Embedded Image" height="100px" src={eventData.tenantLogo} />)}
+        {eventData && eventData.tenantLogo && (<img alt="Logo" height="100px" src={eventData.tenantLogo} />)}
         <Typography component="h1" variant="h5">
           Register below to get a start-number
         </Typography>

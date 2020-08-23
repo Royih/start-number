@@ -45,19 +45,19 @@ namespace Signup.API.Users.Repos
                         HtmlContent = $@"<table border=0 style='width: 100%; font-family: Helvetica'>
                                             <tr>
                                                 <td colspan='3' style='text-align:center;'>
-                                                    <img alt='Embedded Image' style='height: 600px' src='{Constants.DefaultBase64EncodedLogo}'>
+                                                    <img alt='Embedded Image' style='height: 300px' src='{Constants.DefaultBase64EncodedLogo}'>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style='width:10%'>&nbsp;</td>
-                                                <td style='font-size: 1050px; font-weight: bolder; text-align:center; font-family: Helvetica'>
+                                                <td style='font-size: 525px; font-weight: bolder; text-align:center; font-family: Helvetica'>
                                                     {("00"+startNumber).PadRight(3)}
                                                 </td>
-                                                <td style='width:20%; font-size: 300px; line-height: 90%; text-align: center; font-weight: bold; border: 10px solid #000; padding: 30px'>{string.Join("<BR />",year.ToString().ToCharArray())}</td>
+                                                <td style='width:20%; font-size: 150px; line-height: 90%; text-align: center; font-weight: bold; border: 10px solid #000; padding: 15px'>{string.Join("<BR />",year.ToString().ToCharArray())}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan='3'>
-                                                    <div style='margin-top: 50px; border: 1px solid #bbb; padding: 20px; min-height: 200px; background-color: #eee; font-size: 100px;'>
+                                                    <div style='margin-top: 25px; border: 1px solid #bbb; padding: 10px; min-height: 100px; background-color: #eee; font-size: 50px;'>
                                                         Sponsors...
                                                     </div>
                                                 </td>
