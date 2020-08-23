@@ -14,7 +14,7 @@ namespace Signup.API.Models
         public string FirstName { get; set; }
         public string SurName { get; set; }
 
-        public string EMail { get; set; }
+        public string Email { get; set; }
 
         public bool AllowUsToContactPersonByEmail { get; set; }
 

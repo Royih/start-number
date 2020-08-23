@@ -8,6 +8,7 @@ using MongoDB.Driver;
 using Signup.API.Common;
 using Signup.API.Dtos;
 using Signup.API.Models;
+using Signup.API.Signups.Dtos;
 
 namespace Signup.API.Users.Repos
 {
@@ -28,7 +29,7 @@ namespace Signup.API.Users.Repos
         {
             var activeTenants = (await _db.Tenants.FindAsync(x => !string.IsNullOrEmpty(x.CurrentlyActiveEventId))).ToEnumerable().ToList();
             var ids = activeTenants.Select(x => x.CurrentlyActiveEventId);
-            return (await _db.Events.FindAsync(x => ids.Contains(x.Id))).ToEnumerable().Select(x => new ActiveEventDto { TenantKey = activeTenants.Single(y => y.Id == x.TenantId).Key, Name = x.Name });
+            return (await _db.Events.FindAsync(x => ids.Contains(x.Id))).ToEnumerable().Select(x => new ActiveEventDto { TenantKey = activeTenants.Single(y => y.Id == x.TenantId).Key, Name = x.Name, EventId = x.Id });
         }
 
         public async Task<CommandResultDto> SignUp(SignUpDto signUpData)
@@ -41,7 +42,7 @@ namespace Signup.API.Users.Repos
                 var compareFirstName = signUpData.FirstName.ToLower().Trim();
                 var compareSurName = signUpData.SurName.ToLower().Trim();
                 var existingPerson = await (await _db.Persons.FindAsync(x => x.TenantId == tenant.Id &&
-                                                                                x.EMail == compareEmail &&
+                                                                                x.Email == compareEmail &&
                                                                                 x.FirstName.ToLower() == compareFirstName &&
                                                                                 x.SurName.ToLower() == compareSurName)).SingleOrDefaultAsync();
                 if (existingPerson == null)
@@ -51,7 +52,7 @@ namespace Signup.API.Users.Repos
                         TenantId = tenant.Id,
                         FirstName = signUpData.FirstName.Trim(),
                         SurName = signUpData.SurName.Trim(),
-                        EMail = compareEmail,
+                        Email = compareEmail,
                         AllowUsToContactPersonByEmail = signUpData.AllowUsToContactPersonByEmail
                     });
                     existingPerson = _db.Persons.Find(x => x.TenantId == tenant.Id && x.FirstName == signUpData.FirstName.Trim() && x.SurName == signUpData.SurName.Trim()).Single();

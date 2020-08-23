@@ -43,6 +43,7 @@ namespace Signup
             services.AddScoped<IDb, Db>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAnonymousRepository, AnonymousRepository>();
+            services.AddScoped<ISignupRepository, SignupRepository>();
             services.AddScoped<ICurrentUser, CurrentUser>();
 
             services.AddCustomIdentity(Configuration);
@@ -55,7 +56,7 @@ namespace Signup
                         builder.AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials()
-                        .WithOrigins("http://localhost:3000", "https://signupnow.azurewebsites.net");
+                        .WithOrigins(Configuration.GetValue<string>(API.Constants.AppSettingCorsOrigin));
                     });
             });
 

@@ -2,9 +2,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Signup.API.Dtos;
-using Signup.API.Models;
+using Signup.API.Signups.Dtos;
 using Signup.API.Users.Repos;
 
 namespace Signup.API.Users.Commands

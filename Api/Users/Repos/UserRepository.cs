@@ -104,7 +104,7 @@ namespace Signup.API.Users.Repos
                 TenantId = newTenant.Id,
                 FirstName = "Mona",
                 SurName = "Ledum",
-                EMail = seedTenantPersonEmail
+                Email = seedTenantPersonEmail
             });
             var newPerson = (await _db.Persons.FindAsync(x => true)).First();
 

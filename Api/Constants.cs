@@ -14,6 +14,8 @@ namespace Signup.API
     public static class Constants
     {
         public const string AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789æøåÆØÅ-@. _";
+        public const string AppSettingCorsOrigin = "CorsOrigin";
+        public const string AppSettingSecretKey = "SecretKey";
 
         public static IEnumerable<CultureDto> ListCultures
         {

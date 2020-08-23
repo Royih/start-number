@@ -10,6 +10,7 @@ import { ThemeContext } from "src/infrastructure/ThemeContextProvider";
 import DarkModeIcon from "@material-ui/icons/Brightness4";
 import LightModeIcon from "@material-ui/icons/Brightness5";
 import { useHistory } from "react-router-dom";
+import { UserContext } from "src/infrastructure/UserContextProvider";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,6 +29,7 @@ export default function NavBar() {
   const classes = useStyles();
   const theme = useTheme();
   const themeContext = useContext(ThemeContext);
+  const currentUser = useContext(UserContext);
 
   const history = useHistory();
 
@@ -53,7 +55,26 @@ export default function NavBar() {
             {theme.palette.type === "light" && <LightModeIcon />}
             {theme.palette.type === "dark" && <DarkModeIcon />}
           </IconButton>
-          <Button color="inherit">Login</Button>
+          {!currentUser.user && (
+            <Button
+              color="inherit"
+              onClick={() => {
+                history.push("/login");
+              }}
+            >
+              Login
+            </Button>
+          )}
+          {currentUser.user && (
+            <Button
+              color="inherit"
+              onClick={() => {
+                currentUser.logout();
+              }}
+            >
+              Logout
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
     </div>

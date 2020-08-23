@@ -19,7 +19,7 @@ namespace Signup.API.Controllers
         [HttpGet("{action}")]
         public async Task<IActionResult> ListEvents()
         {
-            return Ok(await Mediator.Send(new ListEventsQuery()));
+            return Ok(await Mediator.Send(new ListActiveEventsQuery()));
         }
 
         [HttpPost("{action}")]

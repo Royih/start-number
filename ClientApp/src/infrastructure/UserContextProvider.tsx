@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { ApiContext } from "./ApiContextProvider";
+import { ILoginResult } from "src/components/Login";
 
 export type ClaimDto = {
   type: string;
@@ -23,6 +24,7 @@ export enum RoleTypes {
 export type UserContextState = {
   user: UserDto;
   debugMode: boolean;
+  login: (loginResult: ILoginResult) => void;
   logout: () => void;
   hasRole: (role: RoleTypes) => boolean;
   hasAnyRoles: (role: RoleTypes[]) => boolean;
@@ -50,15 +52,16 @@ export const UserContextProvider = (props: any) => {
     setUser(undefined);
   };
 
-  // const login = (loginResult: ILoginResult) => {
-  //   var user = api.login(loginResult);
-  //   setUser(user);
-  // };
+  const login = (loginResult: ILoginResult) => {
+    var user = api.login(loginResult);
+    setUser(user);
+  };
 
   return (
     <UserContext.Provider
       value={{
         user: user as UserDto,
+        login: login,
         logout: logout,
         debugMode: debugMode,
         hasRole: (role: RoleTypes) => {

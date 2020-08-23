@@ -15,16 +15,16 @@ namespace Signup.API.Infrastructure.CustomIdentity
 
     public static class Extensions
     {
-        private const string AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789æøåÆØÅ-@. _";
+
         private static SymmetricSecurityKey _signingKey;
 
         public static void AddCustomIdentity(this IServiceCollection services, IConfiguration configuration)
         {
-            _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["SecretKey"]));
+            _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration[Constants.AppSettingSecretKey]));
 
             services.AddIdentity<ApplicationUser, MongoIdentityRole>(options =>
                 {
-                    options.User.AllowedUserNameCharacters = AllowedUserNameCharacters;
+                    options.User.AllowedUserNameCharacters = Constants.AllowedUserNameCharacters;
                     options.Password.RequireDigit = true;
                     options.Password.RequiredLength = 6;
                     options.Password.RequireNonAlphanumeric = true;
@@ -87,7 +87,7 @@ namespace Signup.API.Infrastructure.CustomIdentity
 
                         ValidateLifetime = true,
 
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["SecretKey"])),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Constants.AppSettingSecretKey)),
                         ClockSkew = TimeSpan.Zero
                     };
 

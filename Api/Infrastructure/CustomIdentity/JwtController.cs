@@ -16,7 +16,7 @@ using Signup.API.Users.Repos;
 namespace Signup.API.Infrastructure.CustomIdentity
 {
     [Route("api/[controller]")]
-    [EnableCors("MyCorsPolicy")]
+    [EnableCors()]
     [ApiController]
     public class JwtController : Controller
     {

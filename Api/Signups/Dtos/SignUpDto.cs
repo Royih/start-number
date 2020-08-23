@@ -1,7 +1,7 @@
 using System;
 using Signup.API.Models;
 
-namespace Signup.API.Dtos
+namespace Signup.API.Signups.Dtos
 {
     public class SignUpDto
     {

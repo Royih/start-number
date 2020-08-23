@@ -1,6 +1,7 @@
 export interface ActiveEventDto {
   tenantKey: string;
   name: string;
+  eventId: string;
 }
 
 export interface SignUpDto {
@@ -17,4 +18,11 @@ export interface CommandResultDto<T> {
   success: boolean;
   errorMessages: string[];
   messages: string[];
+}
+export interface SignUpsForEventDto {
+  startNumber: number;
+  firstName: string;
+  surName: string;
+  email: string;
+  allowUsToContactPersonByEmail: boolean;
 }
