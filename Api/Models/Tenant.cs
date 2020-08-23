@@ -12,8 +12,11 @@ namespace Signup.API.Models
         public string Name { get; set; }
 
         public string Key { get; set; }
+        public string Base64EncodedLogo { get; set; }
 
         public string CurrentlyActiveEventId { get; set; }
+
+
 
     }
 }

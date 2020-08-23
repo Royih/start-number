@@ -27,3 +27,7 @@ export interface SignUpsForEventDto {
   email: string;
   allowUsToContactPersonByEmail: boolean;
 }
+export interface EventDataDto {
+  tenantName: string;
+  tenantLogo: string;
+}

@@ -25,6 +25,13 @@ namespace Signup.API.Users.Repos
             _ctx = ctx;
         }
 
+        public async Task<EventDataDto> GetEventData(string key)
+        {
+            var tenant = await (await _db.Tenants.FindAsync(x => x.Key == key)).SingleAsync();
+            var currentEvent = await (await _db.Events.FindAsync(x => x.Id == tenant.CurrentlyActiveEventId)).SingleAsync();
+            return new EventDataDto { TenantName = tenant.Name, TenantLogo = tenant.Base64EncodedLogo };
+        }
+
         public async Task<IEnumerable<ActiveEventDto>> ListActiveEvents()
         {
             var activeTenants = (await _db.Tenants.FindAsync(x => !string.IsNullOrEmpty(x.CurrentlyActiveEventId))).ToEnumerable().ToList();

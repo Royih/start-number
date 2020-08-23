@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Signup.API.Dtos;
-using Signup.API.Models;
 using Signup.API.Signups.Dtos;
 
 namespace Signup.API.Users.Repos
@@ -13,6 +12,6 @@ namespace Signup.API.Users.Repos
     {
         Task<IEnumerable<ActiveEventDto>> ListActiveEvents();
         Task<CommandResultDto> SignUp(SignUpDto signUpData);
-
+        Task<EventDataDto> GetEventData(string key);
     }
 }

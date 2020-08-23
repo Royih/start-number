@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -13,7 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { useParams } from "react-router";
-import { SignUpDto, CommandResultDto } from "src/models";
+import { SignUpDto, CommandResultDto, EventDataDto } from "src/models";
 import { ValidationElement, FormValidator } from "src/infrastructure/validator";
 import { useSnackbar } from "notistack";
 import { ApiContext } from "src/infrastructure/ApiContextProvider";
@@ -58,6 +58,7 @@ export const SignUp = () => {
 
   const emptyForm = { tenantKey: key, firstName: "", surName: "", email: "", allowUsToContactPersonByEmail: true, previouslyParticipated: false } as SignUpDto;
   const [signUpData, setSignUpData] = useState({ ...emptyForm });
+  const [eventData, setEventData] = useState({} as EventDataDto);
 
   const validatorElements = [];
   validatorElements.push(new ValidationElement("firstName", signUpData.firstName, { required: true, minLength: 2, maxLength: 100 }));
@@ -95,15 +96,26 @@ export const SignUp = () => {
     }
   };
 
+  useEffect(() => {
+    const loadData = async () => {
+      var data = await api.get<EventDataDto>("anonymous/getEventData/" + key);
+      setEventData(data);
+    };
+    loadData();
+  }, [api, key]);
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
+        {(!eventData || !eventData.tenantLogo) && (
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+        )}
+        {eventData && eventData.tenantLogo && (<img alt="Embedded Image" height="100px" src={eventData.tenantLogo} />)}
         <Typography component="h1" variant="h5">
-          Sign up to {key}
+          Register below to get a start-number
         </Typography>
         <form action="" autoComplete="off" className={classes.form} noValidate>
           <Grid container spacing={2}>

@@ -22,6 +22,12 @@ namespace Signup.API.Controllers
             return Ok(await Mediator.Send(new ListActiveEventsQuery()));
         }
 
+        [HttpGet("{action}/{key}")]
+        public async Task<IActionResult> GetEventData(string key)
+        {
+            return Ok(await Mediator.Send(new GetEventDataQuery { Key = key }));
+        }
+
         [HttpPost("{action}")]
         public async Task<IActionResult> SignUp(SignUpCommand command)
         {

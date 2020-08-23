@@ -95,7 +95,8 @@ namespace Signup.API.Users.Repos
             _db.Tenants.InsertOne(new Tenant
             {
                 Name = seedTenantName,
-                Key = seedTenantKey
+                Key = seedTenantKey,
+                Base64EncodedLogo = Constants.DefaultBase64EncodedLogo
             });
             var newTenant = (await _db.Tenants.FindAsync(x => x.Key == seedTenantKey)).Single();
 
