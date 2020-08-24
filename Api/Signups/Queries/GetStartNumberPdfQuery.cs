@@ -1,10 +1,9 @@
-using System.Collections.Generic;
+
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
-using Signup.API.Signups.Dtos;
 using Signup.API.Users.Repos;
 
 namespace Signup.API.Signups.Queries
@@ -26,11 +25,11 @@ namespace Signup.API.Signups.Queries
 
     public class GetStartNumberPdfQueryHandler : IRequestHandler<GetStartNumberPdfQuery, byte[]>
     {
-        private readonly ISignupRepository _repo;
+        private readonly IAnonymousRepository _repo;
 
         private readonly IMapper _mapper;
 
-        public GetStartNumberPdfQueryHandler(ISignupRepository repo, IMapper mapper)
+        public GetStartNumberPdfQueryHandler(IAnonymousRepository repo, IMapper mapper)
         {
             _repo = repo;
             _mapper = mapper;

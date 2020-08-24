@@ -1,10 +1,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using Signup.API.Common;
 using Signup.API.Dtos;
 using Signup.API.Models;
@@ -17,12 +23,18 @@ namespace Signup.API.Users.Repos
 
         private readonly IDb _db;
         private readonly IHttpContextAccessor _ctx;
+        private readonly IConfiguration _configuration;
+        private readonly IConverter _pdfGenerator;
 
 
-        public AnonymousRepository(IDb db, IHttpContextAccessor ctx)
+
+
+        public AnonymousRepository(IDb db, IHttpContextAccessor ctx, IConfiguration configuration, IConverter pdfGenerator)
         {
             _db = db;
             _ctx = ctx;
+            _configuration = configuration;
+            _pdfGenerator = pdfGenerator;
         }
 
         public async Task<EventDataDto> GetEventData(string key)
@@ -81,9 +93,11 @@ namespace Signup.API.Users.Repos
                     var finalUpd = Builders<Event>.Update.Combine(listOfUpdates);
                     await _db.Events.FindOneAndUpdateAsync(x => x.Id == currentEvent.Id && x.Signups.Length == currentEvent.Signups.Length, finalUpd);
                 }
+                var newlyReservedStartNumber = currentEvent.Signups.Length;
 
-                await _db.SignupRecords.InsertOneAsync(new SignupRecord
+                var signupRecord = new SignupRecord
                 {
+                    EventId = currentEvent.Id,
                     FirstName = signUpData.FirstName.Trim(),
                     SurName = signUpData.SurName.Trim(),
                     Email = signUpData.Email.Trim(),
@@ -92,7 +106,11 @@ namespace Signup.API.Users.Repos
                     IPAddress = _ctx.HttpContext.Connection.RemoteIpAddress.ToString(),
                     SignupUTC = DateTime.UtcNow,
                     PersonId = existingPerson.Id
-                });
+                };
+                await _db.SignupRecords.InsertOneAsync(signupRecord);
+
+                var startNumberPdf = GetStartNumberPdf(newlyReservedStartNumber);
+                await SendEmail(currentEvent, signupRecord, startNumberPdf, newlyReservedStartNumber);
 
                 return new CommandResultDto { Success = true };
             }
@@ -101,6 +119,79 @@ namespace Signup.API.Users.Repos
                 return new CommandResultDto { Success = false, ErrorMessages = new[] { ex.Message } };
             }
 
+        }
+
+        public async Task<byte[]> GetStartNumberPdf(string eventId, string personId)
+        {
+            var ev = await (await _db.Events.FindAsync(x => x.Id == eventId)).SingleAsync();
+            var person = await (await _db.Persons.FindAsync(x => x.Id == personId)).SingleAsync();
+            var idArr = ev.Signups.Select(x => x.PersonId).ToArray();
+            var startNumber = Array.IndexOf(idArr, person.Id) + 1;
+            return GetStartNumberPdf(startNumber);
+        }
+
+        private byte[] GetStartNumberPdf(int startNumber)
+        {
+
+            var year = DateTime.Now.Year;
+
+            var doc = new HtmlToPdfDocument()
+            {
+                GlobalSettings = {
+                    ColorMode = ColorMode.Color,
+                    Orientation = Orientation.Portrait,
+                    PaperSize = PaperKind.A4,
+                },
+                Objects = {
+                    new ObjectSettings() {
+                        HtmlContent = $@"<table border=0 style='width: 100%; font-family: Arial, Helvetica, sans-serif; padding:0; margin:0;'>
+                                            <tr>
+                                                <td style='text-align:center'>
+                                                    <img alt='Embedded Image' style='height: 300px' src='{Constants.DefaultBase64EncodedLogo}'>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                
+                                                <td style='font-size: 500px; font-weight: bolder; text-align:center; font-family: Arial, Helvetica, sans-serif; padding: 0;'>
+                                                    {("00"+startNumber).PadRight(3)}
+                                                </td>
+                                                
+                                            </tr>
+                                            <tr>
+                                                <td style='text-align:center; padding;0'>
+                                                    <div style='margin-top: 25px; border: 1px solid #bbb;'>
+                                                        <img alt='Embedded Image' style='height: 300px' src='{Constants.DefaultBase64EncodedSponsorStripe}'>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>",
+                        WebSettings = { DefaultEncoding  ="utf-8" }
+                    }
+                }
+            };
+            return _pdfGenerator.Convert(doc);
+        }
+
+
+
+        private async Task SendEmail(Event ev, SignupRecord signupRecord, byte[] pdfAsBytes, int startNumber)
+        {
+            var client = new SendGridClient(_configuration.GetValue<string>(Constants.AppSettingSendGridApiKey));
+            var from = new EmailAddress("ingunn.vaer@gmail.com", "Ingunn");
+            var subject = "Your start number for " + ev.Name;
+            var to = new EmailAddress(signupRecord.Email, signupRecord.FirstName + " " + signupRecord.SurName);
+            var plainTextContent = "Your start number for " + ev.Name + " attached.";
+            var htmlContent = "Your start number for <strong>" + ev.Name + "</strong> attached. ";
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var ms = new MemoryStream(pdfAsBytes);
+            await msg.AddAttachmentAsync($"Start_Number_{startNumber}.pdf", contentStream: ms);
+            var response = await client.SendEmailAsync(msg);
+            var bodyAsString = await response.Body.ReadAsStringAsync();
+            var listOfUpdates = new List<UpdateDefinition<SignupRecord>>();
+            listOfUpdates.Add(Builders<SignupRecord>.Update.Set(x => x.EmailSendStatusCode, (int)response.StatusCode));
+            listOfUpdates.Add(Builders<SignupRecord>.Update.Set(x => x.EmailSendResponseBody, bodyAsString));
+            var finalUpd = Builders<SignupRecord>.Update.Combine(listOfUpdates);
+            await _db.SignupRecords.FindOneAndUpdateAsync(x => x.Id == signupRecord.Id, finalUpd);
         }
     }
 }

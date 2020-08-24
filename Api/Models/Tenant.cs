@@ -13,6 +13,7 @@ namespace Signup.API.Models
 
         public string Key { get; set; }
         public string Base64EncodedLogo { get; set; }
+        public string Base64EncodedSponsorStripe { get; set; }
 
         public string CurrentlyActiveEventId { get; set; }
 

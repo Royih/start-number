@@ -120,6 +120,9 @@ namespace Signup
             serviceProvider.SeedDb(Configuration);
 
             Log.Information("Ready!");
+
         }
+
+
     }
 }

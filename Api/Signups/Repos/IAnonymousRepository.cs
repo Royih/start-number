@@ -13,5 +13,6 @@ namespace Signup.API.Users.Repos
         Task<IEnumerable<ActiveEventDto>> ListActiveEvents();
         Task<CommandResultDto> SignUp(SignUpDto signUpData);
         Task<EventDataDto> GetEventData(string key);
+        Task<byte[]> GetStartNumberPdf(string eventId, string personId);
     }
 }

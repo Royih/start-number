@@ -96,7 +96,8 @@ namespace Signup.API.Users.Repos
             {
                 Name = seedTenantName,
                 Key = seedTenantKey,
-                Base64EncodedLogo = Constants.DefaultBase64EncodedLogo
+                Base64EncodedLogo = Constants.DefaultBase64EncodedLogo,
+                Base64EncodedSponsorStripe = Constants.DefaultBase64EncodedSponsorStripe
             });
             var newTenant = (await _db.Tenants.FindAsync(x => x.Key == seedTenantKey)).Single();
 

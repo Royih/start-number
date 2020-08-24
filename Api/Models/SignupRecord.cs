@@ -9,7 +9,7 @@ namespace Signup.API.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
-        public string TenantId { get; set; }
+        public string EventId { get; set; }
         public DateTime SignupUTC { get; set; }
         public string FirstName { get; set; }
         public string SurName { get; set; }
@@ -18,6 +18,8 @@ namespace Signup.API.Models
         public bool PreviouslyParticipated { get; set; }
         public string IPAddress { get; set; }
         public string PersonId { get; set; }
+        public int? EmailSendStatusCode { get; set; }
+        public string EmailSendResponseBody { get; set; }
 
     }
 }

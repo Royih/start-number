@@ -15,60 +15,13 @@ namespace Signup.API.Users.Repos
     {
 
         private readonly IDb _db;
-        private readonly IConverter _pdfGenerator;
+       
 
-
-        public SignupRepository(IDb db, IConverter pdfGenerator)
+        public SignupRepository(IDb db)
         {
             _db = db;
-            _pdfGenerator = pdfGenerator;
         }
 
-
-        public async Task<byte[]> GetStartNumberPdf(string eventId, string personId)
-        {
-            var ev = await (await _db.Events.FindAsync(x => x.Id == eventId)).SingleAsync();
-            var person = await (await _db.Persons.FindAsync(x => x.Id == personId)).SingleAsync();
-            var idArr = ev.Signups.Select(x => x.PersonId).ToArray();
-            var startNumber = Array.IndexOf(idArr, person.Id) + 1;
-            var year = DateTime.Now.Year;
-
-            var doc = new HtmlToPdfDocument()
-            {
-                GlobalSettings = {
-                    ColorMode = ColorMode.Color,
-                    Orientation = Orientation.Portrait,
-                    PaperSize = PaperKind.A4,
-                },
-                Objects = {
-                    new ObjectSettings() {
-                        HtmlContent = $@"<table border=0 style='width: 100%; font-family: Arial, Helvetica, sans-serif'>
-                                            <tr>
-                                                <td colspan='3' style='text-align:center;'>
-                                                    <img alt='Embedded Image' style='height: 300px' src='{Constants.DefaultBase64EncodedLogo}'>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style='width:10%'>&nbsp;</td>
-                                                <td style='font-size: 420px; font-weight: bolder; text-align:center; font-family: Arial, Helvetica, sans-serif; padding: 0;'>
-                                                    {("00"+startNumber).PadRight(3)}
-                                                </td>
-                                                <td style='width:20%; font-size: 90px; line-height: 90%; text-align: center; font-weight: bold; border: 2px solid #bbb; background-color: #eee; padding: 8px'>{string.Join("<BR />",year.ToString().ToCharArray())}</td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan='3'>
-                                                    <div style='margin-top: 25px; border: 1px solid #bbb; padding: 10px; min-height: 100px; background-color: #eee; font-size: 50px;'>
-                                                        Sponsors...
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>",
-                        WebSettings = { DefaultEncoding  ="utf-8" }
-                    }
-                }
-            };
-            return _pdfGenerator.Convert(doc);
-        }
 
         public async Task<IEnumerable<SignUpsForEventDto>> ListSignups(string eventId)
         {
