@@ -9,7 +9,7 @@ using Signup.API.Users.Repos;
 namespace Signup.API.Users.Commands
 {
 
-    public class SignUpCommand : IRequest<CommandResultDto>
+    public class SignUpCommand : IRequest<CommandResultDto<string>>
     {
         public SignUpDto SignUpData { get; set; }
     }
@@ -26,7 +26,7 @@ namespace Signup.API.Users.Commands
         }
     }
 
-    public class SignUpCommandHandler : IRequestHandler<SignUpCommand, CommandResultDto>
+    public class SignUpCommandHandler : IRequestHandler<SignUpCommand, CommandResultDto<string>>
     {
 
         private readonly IAnonymousRepository _repo;
@@ -36,7 +36,7 @@ namespace Signup.API.Users.Commands
             _repo = repo;
         }
 
-        public async Task<CommandResultDto> Handle(SignUpCommand command, CancellationToken cancellationToken)
+        public async Task<CommandResultDto<string>> Handle(SignUpCommand command, CancellationToken cancellationToken)
         {
             return await _repo.SignUp(command.SignUpData);
 

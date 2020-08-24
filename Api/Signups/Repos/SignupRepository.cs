@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DinkToPdf;
-using DinkToPdf.Contracts;
 using MongoDB.Driver;
 using Signup.API.Common;
 using Signup.API.Signups.Dtos;

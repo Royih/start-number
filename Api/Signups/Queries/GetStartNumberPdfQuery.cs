@@ -1,15 +1,15 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Signup.API.Users.Repos;
 
 namespace Signup.API.Signups.Queries
 {
 
-    public class GetStartNumberPdfQuery : IRequest<byte[]>
+    public class GetStartNumberPdfQuery : IRequest<FileContentResult>
     {
         public string EventId { get; set; }
         public string PersonId { get; set; }
@@ -23,23 +23,27 @@ namespace Signup.API.Signups.Queries
         }
     }
 
-    public class GetStartNumberPdfQueryHandler : IRequestHandler<GetStartNumberPdfQuery, byte[]>
+    public class GetStartNumberPdfQueryHandler : IRequestHandler<GetStartNumberPdfQuery, FileContentResult>
     {
         private readonly IAnonymousRepository _repo;
 
-        private readonly IMapper _mapper;
 
-        public GetStartNumberPdfQueryHandler(IAnonymousRepository repo, IMapper mapper)
+
+        public GetStartNumberPdfQueryHandler(IAnonymousRepository repo)
         {
             _repo = repo;
-            _mapper = mapper;
         }
 
 
 
-        async Task<byte[]> IRequestHandler<GetStartNumberPdfQuery, byte[]>.Handle(GetStartNumberPdfQuery request, CancellationToken cancellationToken)
+        async Task<FileContentResult> IRequestHandler<GetStartNumberPdfQuery, FileContentResult>.Handle(GetStartNumberPdfQuery request, CancellationToken cancellationToken)
         {
-            return await _repo.GetStartNumberPdf(request.EventId, request.PersonId);
+            var data = await _repo.GetStartNumberPdf(request.EventId, request.PersonId);
+
+            return new FileContentResult(data, "application/pdf")
+            {
+                FileDownloadName = "file_name_here.pdf"
+            };
         }
     }
 }

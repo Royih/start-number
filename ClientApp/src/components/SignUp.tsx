@@ -74,7 +74,7 @@ export const SignUp = () => {
   const emptyForm = { tenantKey: key, firstName: "", surName: "", email: "", allowUsToContactPersonByEmail: true, previouslyParticipated: false } as SignUpDto;
   const [signUpData, setSignUpData] = useState({ ...emptyForm });
   const [eventData, setEventData] = useState({} as EventDataDto);
-  const [displayConfirmation, setDisplayConfirmation] = useState(false);
+  const [downloadStartNumberSignupId, setDownloadStartNumberSignupId] = useState("");
 
   const validatorElements = [];
   validatorElements.push(new ValidationElement("firstName", signUpData.firstName, { required: true, minLength: 2, maxLength: 100 }));
@@ -102,15 +102,20 @@ export const SignUp = () => {
   };
 
   const save = async () => {
-    const saveResult = await api.post<CommandResultDto<any>>("anonymous/signUp", { signUpData: signUpData });
-    if (saveResult && saveResult.success) {
+    const saveResult = await api.post<CommandResultDto<string>>("anonymous/signUp", { signUpData: signUpData });
+    if (saveResult && saveResult.success && saveResult.data) {
       enqueueSnackbar("Thank you!", { variant: "success", anchorOrigin: { vertical: "top", horizontal: "center" } });
       setSignUpData({ ...emptyForm });
       setValidator(validator.setPristine());
-      setDisplayConfirmation(true);
+      setDownloadStartNumberSignupId(saveResult.data);
     } else {
       enqueueSnackbar("Error occurred: " + saveResult?.errorMessages?.join(", ") || "", { variant: "error", anchorOrigin: { vertical: "bottom", horizontal: "center" } });
     }
+  };
+
+  const downloadStartNumber = async () => {
+    const data = await api.get<Blob>("anonymous/downloadStartNumber/" + downloadStartNumberSignupId, true);
+    saveAs(data);
   };
 
   useEffect(() => {
@@ -124,7 +129,7 @@ export const SignUp = () => {
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      {!displayConfirmation && (
+      {!downloadStartNumberSignupId && (
         <div className={classes.paper}>
           {(!eventData || !eventData.tenantLogo) && (
             <Avatar className={classes.avatar}>
@@ -220,16 +225,18 @@ export const SignUp = () => {
           {/* <pre>{JSON.stringify(signUpData, null, 4)}</pre> */}
         </div>
       )}
-      {displayConfirmation && (
+      {downloadStartNumberSignupId && (
         <Card className={classes.root}>
           <CardContent>
             <Typography className={classes.title} color="textSecondary" gutterBottom>
-              Thank you! We will send you the start-number in PDF-format to the email-address you provided. You can also download the start-number here:
+              Thank you! We will also send you the start-number in PDF-format to the email-address you provided.
+              <br /> If you do not receive this email, please check your spam-filter.
+              <br /> You can also download the start-number here:
             </Typography>
 
-            <Typography className={classes.pos} color="textSecondary">
+            <Button variant="contained" color="primary" size="small" onClick={downloadStartNumber}>
               Download
-            </Typography>
+            </Button>
           </CardContent>
           <CardActions>
             <Button
@@ -237,7 +244,7 @@ export const SignUp = () => {
               color="secondary"
               size="small"
               onClick={() => {
-                setDisplayConfirmation(false);
+                setDownloadStartNumberSignupId("");
               }}
             >
               Add another / return to registration page

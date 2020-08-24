@@ -33,5 +33,14 @@ namespace Signup.API.Controllers
         {
             return Ok(await Mediator.Send(command));
         }
+
+        [HttpGet("downloadStartNumber/{signupId}")]
+        public async Task<IActionResult> ListSignups(string signupId)
+        {
+            return await Mediator.Send(new GetStartNumberPdfBySignupQuery
+            {
+                SignupId = signupId
+            });
+        }
     }
 }

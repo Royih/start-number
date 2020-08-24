@@ -18,6 +18,7 @@ namespace Signup.API.Models
         public bool PreviouslyParticipated { get; set; }
         public string IPAddress { get; set; }
         public string PersonId { get; set; }
+        public int ActualStartNumber { get; set; }
         public int? EmailSendStatusCode { get; set; }
         public string EmailSendResponseBody { get; set; }
 

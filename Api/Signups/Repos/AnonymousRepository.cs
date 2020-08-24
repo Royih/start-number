@@ -14,6 +14,7 @@ using SendGrid.Helpers.Mail;
 using Signup.API.Common;
 using Signup.API.Dtos;
 using Signup.API.Models;
+using Signup.API.Signups;
 using Signup.API.Signups.Dtos;
 
 namespace Signup.API.Users.Repos
@@ -52,7 +53,7 @@ namespace Signup.API.Users.Repos
             return activeTenants.Select(x => new ActiveEventDto { TenantKey = x.Key, Name = currentEvents.Single(y => y.Id == x.CurrentlyActiveEventId).Name, EventId = x.CurrentlyActiveEventId, Logo = x.Base64EncodedLogo });
         }
 
-        public async Task<CommandResultDto> SignUp(SignUpDto signUpData)
+        public async Task<CommandResultDto<string>> SignUp(SignUpDto signUpData)
         {
             try
             {
@@ -93,7 +94,7 @@ namespace Signup.API.Users.Repos
                     var finalUpd = Builders<Event>.Update.Combine(listOfUpdates);
                     await _db.Events.FindOneAndUpdateAsync(x => x.Id == currentEvent.Id && x.Signups.Length == currentEvent.Signups.Length, finalUpd);
                 }
-                var newlyReservedStartNumber = currentEvent.Signups.Length;
+                var newlyReservedStartNumber = currentEvent.Signups.Length + 1;
 
                 var signupRecord = new SignupRecord
                 {
@@ -105,18 +106,19 @@ namespace Signup.API.Users.Repos
                     PreviouslyParticipated = signUpData.PreviouslyParticipated,
                     IPAddress = _ctx.HttpContext.Connection.RemoteIpAddress.ToString(),
                     SignupUTC = DateTime.UtcNow,
-                    PersonId = existingPerson.Id
+                    PersonId = existingPerson.Id,
+                    ActualStartNumber = newlyReservedStartNumber
                 };
                 await _db.SignupRecords.InsertOneAsync(signupRecord);
 
                 var startNumberPdf = GetStartNumberPdf(newlyReservedStartNumber);
-                await SendEmail(currentEvent, signupRecord, startNumberPdf, newlyReservedStartNumber);
+                await SendEmail(currentEvent, signupRecord, startNumberPdf);
 
-                return new CommandResultDto { Success = true };
+                return new CommandResultDto<string> { Success = true, Data = signupRecord.Id };
             }
             catch (Exception ex)
             {
-                return new CommandResultDto { Success = false, ErrorMessages = new[] { ex.Message } };
+                return new CommandResultDto<string> { Success = false, ErrorMessages = new[] { ex.Message }, Data = null };
             }
 
         }
@@ -128,6 +130,11 @@ namespace Signup.API.Users.Repos
             var idArr = ev.Signups.Select(x => x.PersonId).ToArray();
             var startNumber = Array.IndexOf(idArr, person.Id) + 1;
             return GetStartNumberPdf(startNumber);
+        }
+
+        public byte[] GetStartNumberPdf(SignupRecord signup)
+        {
+            return GetStartNumberPdf(signup.ActualStartNumber);
         }
 
         private byte[] GetStartNumberPdf(int startNumber)
@@ -153,7 +160,7 @@ namespace Signup.API.Users.Repos
                                             <tr>
                                                 
                                                 <td style='font-size: 500px; font-weight: bolder; text-align:center; font-family: Arial, Helvetica, sans-serif; padding: 0;'>
-                                                    {("00"+startNumber).PadRight(3)}
+                                                    {startNumber.ToString().PadLeft(3, '0')}
                                                 </td>
                                                 
                                             </tr>
@@ -174,7 +181,7 @@ namespace Signup.API.Users.Repos
 
 
 
-        private async Task SendEmail(Event ev, SignupRecord signupRecord, byte[] pdfAsBytes, int startNumber)
+        private async Task SendEmail(Event ev, SignupRecord signupRecord, byte[] pdfAsBytes)
         {
             var client = new SendGridClient(_configuration.GetValue<string>(Constants.AppSettingSendGridApiKey));
             var from = new EmailAddress("ingunn.vaer@gmail.com", "Ingunn");
@@ -184,7 +191,7 @@ namespace Signup.API.Users.Repos
             var htmlContent = "Your start number for <strong>" + ev.Name + "</strong> attached. ";
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var ms = new MemoryStream(pdfAsBytes);
-            await msg.AddAttachmentAsync($"Start_Number_{startNumber}.pdf", contentStream: ms);
+            await msg.AddAttachmentAsync(signupRecord.GetStartNumberPdfFileName(), contentStream: ms);
             var response = await client.SendEmailAsync(msg);
             var bodyAsString = await response.Body.ReadAsStringAsync();
             var listOfUpdates = new List<UpdateDefinition<SignupRecord>>();
@@ -193,5 +200,12 @@ namespace Signup.API.Users.Repos
             var finalUpd = Builders<SignupRecord>.Update.Combine(listOfUpdates);
             await _db.SignupRecords.FindOneAndUpdateAsync(x => x.Id == signupRecord.Id, finalUpd);
         }
+
+        public async Task<SignupRecord> GetSignup(string signupId)
+        {
+            return await (await _db.SignupRecords.FindAsync(x => x.Id == signupId)).SingleAsync();
+        }
+
+
     }
 }
