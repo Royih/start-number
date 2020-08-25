@@ -148,31 +148,31 @@ namespace Signup.API.Users.Repos
                     ColorMode = ColorMode.Color,
                     Orientation = Orientation.Portrait,
                     PaperSize = PaperKind.A4,
+                    DPI = 380,
                 },
                 Objects = {
                     new ObjectSettings() {
-                        HtmlContent = $@"<table border=0 style='width: 100%; font-family: Arial, Helvetica, sans-serif; padding:0; margin:0;'>
-                                            <tr>
-                                                <td style='text-align:center'>
-                                                    <img alt='Embedded Image' style='height: 300px' src='{Constants.DefaultBase64EncodedLogo}'>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                
-                                                <td style='font-size: 500px; font-weight: bolder; text-align:center; font-family: Arial, Helvetica, sans-serif; padding: 0;'>
-                                                    {startNumber.ToString().PadLeft(3, '0')}
-                                                </td>
-                                                
-                                            </tr>
-                                            <tr>
-                                                <td style='text-align:center; padding;0'>
-                                                    <div style='margin-top: 25px; border: 1px solid #bbb;'>
-                                                        <img alt='Embedded Image' style='height: 300px' src='{Constants.DefaultBase64EncodedSponsorStripe}'>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>",
-                        WebSettings = { DefaultEncoding  ="utf-8" }
+                        HtmlContent = $@"
+                                <table cellspacing='0' cellpadding='0' border=1 style='font-family: Arial, Helvetica, sans-serif; width:100%'>
+                                        <tr>
+                                            <td style='text-align:center;padding:0;margin:0'>
+                                                <img alt='Embedded Image' style='max-width:100%;max-height:100%; margin:0' src='{Constants.DefaultBase64EncodedLogo}'>
+                                            </td>
+                                        </tr>
+                                         <tr>                                                
+                                            <td style='font-size: 200px; font-weight: bolder; text-align:center; font-family: Arial, Helvetica, sans-serif; padding:0;margin:0'>
+                                                {startNumber.ToString().PadLeft(3, '0')}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style='text-align:center; padding:0;margin:0'>
+                                                <div style='margin-top: 25px; border: 1px solid #bbb;'>
+                                                    <img alt='Embedded Image' style='max-width:100%;max-height:100%;' src='{Constants.DefaultBase64EncodedSponsorStripe}'>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>",
+                                           WebSettings = { DefaultEncoding  ="utf-8" }
                     }
                 }
             };
