@@ -1,10 +1,13 @@
 import React, { useState, useContext, useEffect } from "react";
 import { ApiContext } from "src/infrastructure/ApiContextProvider";
-import { Avatar, Typography, TextField, Button, Box, makeStyles, Container } from "@material-ui/core";
+import { Avatar, Typography, TextField, Button, makeStyles, Container } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Alert from "@material-ui/lab/Alert";
 import { UserContext } from "src/infrastructure/UserContextProvider";
 import { useHistory } from "react-router-dom";
+import packageJson from "src/../package.json";
+const globalAny: any = global;
+globalAny.appVersion = packageJson.version;
 
 interface IProps {
   login: any;
@@ -39,16 +42,6 @@ export interface ILoginResult {
   access_token: string;
   refresh_token: string;
   espires_in: number;
-}
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      Signup! {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
 }
 
 export const Login = (props: IProps) => {
@@ -112,9 +105,6 @@ export const Login = (props: IProps) => {
         </form>
       </div>
       {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-      <Box mt={8}>
-        <Copyright />
-      </Box>
     </Container>
   );
 };

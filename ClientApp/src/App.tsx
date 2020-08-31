@@ -11,6 +11,7 @@ import { Login } from "./components/Login";
 import { SignUp } from "./components/SignUp";
 import { SnackbarProvider } from "notistack";
 import { ViewEvent } from "./components/ViewEvent";
+import CacheBuster from "./infrastructure/CacheBuster";
 
 const UserRoutes = () => {
   const currentUser = useContext(UserContext);
@@ -22,21 +23,23 @@ const UserRoutes = () => {
 
 function App() {
   return (
-    <SnackbarProvider maxSnack={10}>
-      <ApiContextProvider>
-        <UserContextProvider>
-          <ThemeContextProvider>
-            <CssBaseline />
-            <Layout>
-              <Route exact path="/" component={Home} />
-              <Route exact path="/signup/:key" component={SignUp} />
-              <UserRoutes></UserRoutes>
-              <Route path="/login" component={Login} />
-            </Layout>
-          </ThemeContextProvider>
-        </UserContextProvider>
-      </ApiContextProvider>
-    </SnackbarProvider>
+    <CacheBuster>
+      <SnackbarProvider maxSnack={10}>
+        <ApiContextProvider>
+          <UserContextProvider>
+            <ThemeContextProvider>
+              <CssBaseline />
+              <Layout>
+                <Route exact path="/" component={Home} />
+                <Route exact path="/signup/:key" component={SignUp} />
+                <UserRoutes></UserRoutes>
+                <Route path="/login" component={Login} />
+              </Layout>
+            </ThemeContextProvider>
+          </UserContextProvider>
+        </ApiContextProvider>
+      </SnackbarProvider>
+    </CacheBuster>
   );
 }
 export default App;

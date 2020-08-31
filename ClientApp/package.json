@@ -1,6 +1,6 @@
 {
-  "name": "Signup",
-  "version": "0.1.0",
+  "name": "signup-now",
+  "version": "0.1.2",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.0",
@@ -43,6 +43,8 @@
     "extends": "react-app"
   },
   "scripts": {
+    "generate-build-version": "node generate-build-version",
+    "prebuild": "npm run generate-build-version",
     "start": "rimraf ./build && react-scripts start",
     "build": "react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jsdom",
